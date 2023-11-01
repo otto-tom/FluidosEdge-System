@@ -229,6 +229,8 @@ func (r *Rest) GoToTarget(data map[string]interface{}, stop chan struct{}) (inte
 		}
 	}
 
+	client.CloseIdleConnections()
+
 	//TODO: better handle errors since now multiple requests might exist
 	return resp, ret
 
