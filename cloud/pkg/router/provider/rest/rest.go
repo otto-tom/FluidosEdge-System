@@ -206,13 +206,32 @@ func (r *Rest) GoToTarget(data map[string]interface{}, stop chan struct{}) (inte
 		err := fmt.Errorf("input data does not exist valid value \"nodeName\"")
 		klog.Warningf(err.Error())
 	}
-	req, err := httpUtils.BuildRequest(http.MethodPost, r.Endpoint, bytes.NewReader(content), "", nodeName)
-	if err != nil {
-		return nil, err
-	}
 
 	client := httpUtils.NewHTTPClient()
-	return httpUtils.SendRequest(req, client)
+
+	sEndpoint := strings.Split(r.Endpoint, ",")
+	var resp *http.Response
+	var ret error = nil
+
+	for _, endpoint := range sEndpoint {
+		req, err := httpUtils.BuildRequest(http.MethodPost, endpoint, bytes.NewReader(content), "", nodeName)
+		if err != nil {
+			klog.Warningf("Build HTTP %s request to %s FAIL: %s", http.MethodPost, endpoint, err.Error())
+			continue
+		}
+
+		resp, ret = httpUtils.SendRequest(req, client)
+		if ret != nil {
+			klog.Warningf("HTTP %s request to %s FAIL: ", http.MethodPost, endpoint, resp)
+			continue
+		} else {
+			klog.Infof("HTTP %s to %s: %s", http.MethodPost, endpoint, content)
+		}
+	}
+
+	//TODO: better handle errors since now multiple requests might exist
+	return resp, ret
+
 }
 
 func normalizeResource(resource string) string {
