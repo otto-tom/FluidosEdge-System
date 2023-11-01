@@ -22,6 +22,10 @@ set -o pipefail
 
 KUBEEDGE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 
+if [[ -z "${DOKERHUB_NS}" ]]; then
+  DOKERHUB_NS=othontom
+fi
+
 ALL_IMAGES_AND_TARGETS=(
   #{target}:{IMAGE_NAME}:{DOCKERFILE_PATH}
   cloudcore:cloudcore:build/cloud/Dockerfile
@@ -88,7 +92,7 @@ function build_images() {
     DOCKERFILE_PATH="$(get_dockerfile_by_target ${arg})"
 
     set -x
-    docker build --build-arg GO_LDFLAGS="${GO_LDFLAGS}" -t kubeedge/${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKERFILE_PATH} .
+    docker build --build-arg GO_LDFLAGS="${GO_LDFLAGS}" -t ${DOKERHUB_NS}/${IMAGE_NAME}:${IMAGE_TAG}${DOCKER_IMG_CTAG} -f ${DOCKERFILE_PATH} .
     set +x
   done
 }
