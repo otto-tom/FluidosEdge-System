@@ -1,15 +1,15 @@
 # Default values for kubeedge.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-appVersion: "1.13.0"
+appVersion: "1.14.5"
 
 cloudCore:
   replicaCount: 1
   hostNetWork: true
   image:
     repository: "kubeedge/cloudcore"
-    tag: "v1.13.0"
-    pullPolicy: "IfNotPresent"
+    tag: "v1.14.5-fluidos"
+    pullPolicy: "Always"
     pullSecrets: []
   securityContext:
     privileged: true
@@ -24,8 +24,14 @@ cloudCore:
         - matchExpressions:
           - key: node-role.kubernetes.io/edge
             operator: DoesNotExist
+        - matchExpressions:
+          - key: node-role.fluidos.eu/resources
+            operator: DoesNotExist
+        - matchExpressions:
+          - key: node-role.fluidos.eu/worker
+            operator: DoesNotExist
   tolerations: []
-  nodeSelector: {}
+  nodeSelector: {"node-role.kubernetes.io/control-plane":""}
   resources:
     limits:
       cpu: 200m
@@ -43,8 +49,10 @@ cloudCore:
         - ""
       nodeLimit: "1000"
       websocket:
+        port: 10000
         enable: true
       quic:
+        port: 10001
         enable: false
         maxIncomingStreams: "10000"
       https:
@@ -54,7 +62,7 @@ cloudCore:
     dynamicController:
       enable: false
     router:
-      enable: false
+      enable: true
   service:
     enable: true
     type: "NodePort"
@@ -71,7 +79,7 @@ iptablesManager:
   hostNetWork: true
   image:
     repository: "kubeedge/iptables-manager"
-    tag: "v1.12.0"
+    tag: "v1.14.5"
     pullPolicy: "IfNotPresent"
     pullSecrets: []
   securityContext:
@@ -90,8 +98,14 @@ iptablesManager:
         - matchExpressions:
           - key: node-role.kubernetes.io/edge
             operator: DoesNotExist
+        - matchExpressions:
+          - key: node-role.fluidos.eu/resources
+            operator: DoesNotExist
+        - matchExpressions:
+          - key: node-role.fluidos.eu/worker
+            operator: DoesNotExist
   tolerations: []
-  nodeSelector: {}
+  nodeSelector: {"node-role.kubernetes.io/control-plane":""}
   resources:
     limits:
       cpu: 200m
@@ -104,7 +118,7 @@ controllerManager:
   enable: false
   image:
     repository: "kubeedge/controller-manager"
-    tag: "v1.12.0"
+    tag: "v1.14.5"
     pullPolicy: "IfNotPresent"
     pullSecrets: []
   labels:
