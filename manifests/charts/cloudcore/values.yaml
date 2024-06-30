@@ -7,7 +7,7 @@ cloudCore:
   replicaCount: 1
   hostNetWork: true
   image:
-    repository: "kubeedge/cloudcore"
+    repository: "othontom/cloudcore"
     tag: "v1.14.5-fluidos"
     pullPolicy: "Always"
     pullSecrets: []
